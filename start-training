@@ -12,6 +12,7 @@ import shutil
 import logging
 import logging.config
 
+
 env_types = [
     'append-still',
     'append-spawn',
@@ -40,7 +41,7 @@ parser.add_argument('--run-benchmarks', action="store_true",
     help="Don't do training; just run benchmarks on all benchmark levels.")
 parser.add_argument('--impact-penalty', default=0.0, type=float)
 parser.add_argument('--env-type', choices=env_types)
-parser.add_argument('--algo', choices=('ppo', 'dqn'), default='ppo')
+parser.add_argument('--algo', choices=('ppo', 'dqn', 'vpg'), default='ppo')
 parser.add_argument('--seed', default=None, type=int)
 args = parser.parse_args()
 
@@ -59,7 +60,7 @@ if os.path.exists(data_dir) and args.data_dir is not None:
           data_dir)
     response = None
     response = 'append' if args.run_benchmarks else \
-               'overwrite' if job_name.startswith('tmp') else None
+               'overwrite' if job_name.startswith('tmp') else None 
     while response not in ('overwrite', 'append', 'abort'):
         response = input("(overwrite / append / abort) > ")
     if response == 'overwrite':
@@ -148,11 +149,11 @@ subprocess.run([
 
 
 # Start tensorboard
-
+'''
 if args.port:
     tb_proc = subprocess.Popen([
         "tensorboard", "--logdir_spec", job_name + ':' + data_dir, '--port', str(args.port)])
-
+'''
 
 # Start training!
 
@@ -286,6 +287,17 @@ try:
                 training_envs=training_envs,
                 testing_envs=testing_envs,
                 data_logger=data_logger)
+        elif args.algo == 'vpg':
+            from training.models import SafeLifePolicyNetwork
+            from training.vpg import VPG
+
+            obs_shape = training_envs[0].observation_space.shape
+            policy_model = SafeLifePolicyNetwork(obs_shape)
+            algo = VPG(
+                policy_model, None,  # TODO incorporate value fn network
+                training_envs=training_envs,
+                testing_envs=testing_envs,
+                data_logger=data_logger)
         else:
             logging.error("Unexpected algorithm type '%s'", args.algo)
             raise ValueError("unexpected algorithm type")
@@ -294,7 +306,11 @@ try:
             algo.run_episodes(testing_envs, num_episodes=1000)
         else:
             algo.train(6e6)
-
+except Exception:
+    print(1)
+finally:
+    print(1)
+'''
 except Exception:
     logging.exception("Ran into an unexpected error. Aborting training.")
 finally:
@@ -306,3 +322,4 @@ finally:
         subprocess.run("sudo shutdown +3".split())
         logging.critical("Shutdown commenced. Exiting to bash.")
         subprocess.run(["bash", "-il"])
+'''
