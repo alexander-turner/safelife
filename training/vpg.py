@@ -118,7 +118,7 @@ class VPG(BaseAlgo):
         for trajectory in trajectories:
             rtgs.append(list)
             so_far = 0
-            total = sum([reward for (_, _, reward) in trajectory])
+            total = sum([reward for (_, _, reward, _) in trajectory])
             for _, _, reward in trajectory:
                 rtgs[-1].append(total - so_far)
                 so_far += reward
