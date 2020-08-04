@@ -162,14 +162,14 @@ class SafeLifeLogger(BaseLogger):
             episode #{training_episodes};  training steps = {training_steps}
             clock: {time}
             length: {length}
-            reward: {reward} / {reward_possible} (exit cutoff = {reward_needed})
+            reward: {reward} out of {reward_possible} (exit cutoff = {reward_needed})
     """[1:-1])
     console_testing_msg = textwrap.dedent("""
         Testing episode completed.
             level name: {level_name}
             clock: {time}
             length: {length}
-            reward: {reward} / {reward_possible} (exit cutoff = {reward_needed})
+            reward: {reward} out of {reward_possible} (exit cutoff = {reward_needed})
     """[1:-1])
 
     def __init__(self, logdir, **kwargs):
