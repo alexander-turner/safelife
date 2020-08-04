@@ -265,18 +265,18 @@ try:
                     test_levels, distinct_levels=5, repeat_levels=True)
             )
 
-    if args.algo in ('ppo', 'vpg'):
-        from training.models import SafeLifePolicyNetwork
-        from training.ppo import PPO
-        from training.vpg import VPG
+        if args.algo in ('ppo', 'vpg'):
+            from training.models import SafeLifePolicyNetwork
+            from training.ppo import PPO
+            from training.vpg import VPG
 
-        obs_shape = training_envs[0].observation_space.shape
-        model = SafeLifePolicyNetwork(obs_shape)
-        algo = (PPO if args.algo == 'ppo' else VPG)(
-            model,
-            training_envs=training_envs,
-            testing_envs=testing_envs,
-            data_logger=data_logger)
+            obs_shape = training_envs[0].observation_space.shape
+            model = SafeLifePolicyNetwork(obs_shape)
+            algo = (PPO if args.algo == 'ppo' else VPG)(
+                model,
+                training_envs=training_envs,
+                testing_envs=testing_envs,
+                data_logger=data_logger)
 
         elif args.algo == 'dqn':
             from training.models import SafeLifeQNetwork
@@ -299,7 +299,7 @@ try:
         else:
             algo.train(6e6)
 
-except Exception:
+#except Exception:
     logging.exception("Ran into an unexpected error. Aborting training.")
 finally:
     if args.port:
